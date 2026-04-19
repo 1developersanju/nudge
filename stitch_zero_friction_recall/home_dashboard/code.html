@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>The Obsidian Sanctuary - Calm Command Center</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-dim": "#131315",
+                      "surface-container-high": "#2a2a2c",
+                      "surface-container-lowest": "#0e0e10",
+                      "background": "#131315",
+                      "surface-bright": "#39393b",
+                      "on-primary-fixed-variant": "#423e81",
+                      "error": "#ffb4ab",
+                      "on-tertiary-container": "#554800",
+                      "on-secondary-container": "#b8b5d6",
+                      "outline": "#928f9b",
+                      "on-primary-container": "#444083",
+                      "tertiary": "#ebd36b",
+                      "inverse-primary": "#5a579a",
+                      "secondary-fixed-dim": "#c6c3e4",
+                      "on-surface-variant": "#c8c5d1",
+                      "surface-container-low": "#1b1b1d",
+                      "inverse-surface": "#e5e1e4",
+                      "outline-variant": "#474650",
+                      "surface-variant": "#353437",
+                      "surface-container-highest": "#353437",
+                      "error-container": "#93000a",
+                      "on-surface": "#e5e1e4",
+                      "on-error": "#690005",
+                      "secondary-fixed": "#e3dfff",
+                      "surface-tint": "#c4c0ff",
+                      "on-primary-fixed": "#150f54",
+                      "on-background": "#e5e1e4",
+                      "tertiary-fixed": "#fbe279",
+                      "on-primary": "#2b2769",
+                      "surface": "#131315",
+                      "tertiary-container": "#ceb753",
+                      "on-tertiary-fixed": "#221b00",
+                      "on-tertiary-fixed-variant": "#534600",
+                      "secondary-container": "#484662",
+                      "on-secondary-fixed-variant": "#45445f",
+                      "on-secondary-fixed": "#1a1932",
+                      "primary-container": "#b4b0fb",
+                      "secondary": "#c6c3e4",
+                      "tertiary-fixed-dim": "#dec660",
+                      "primary-fixed": "#e3dfff",
+                      "primary": "#d2ceff",
+                      "surface-container": "#201f21",
+                      "inverse-on-surface": "#313032",
+                      "primary-fixed-dim": "#c4c0ff",
+                      "on-tertiary": "#3a3000",
+                      "on-secondary": "#2f2e48",
+                      "on-error-container": "#ffdad6"
+              },
+              "borderRadius": {
+                      "DEFAULT": "1rem",
+                      "lg": "2rem",
+                      "xl": "3rem",
+                      "full": "9999px"
+              },
+              "fontFamily": {
+                      "headline": ["Manrope"],
+                      "body": ["Manrope"],
+                      "label": ["Manrope"]
+              }
+            },
+          }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Manrope', sans-serif; }
+        .glass-panel {
+            backdrop-filter: blur(20px);
+            background: rgba(53, 52, 55, 0.7);
+        }
+        .lavender-gradient {
+            background: linear-gradient(135deg, #d2ceff 0%, #b4b0fb 100%);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-surface text-on-surface min-h-screen pb-32">
+<!-- TopAppBar Shell -->
+<nav class="bg-[#131315] dark:bg-[#131315] shadow-[0_32px_64px_-15px_rgba(180,176,251,0.08)] sticky top-0 z-40">
+<div class="flex justify-between items-center w-full px-6 py-4">
+<div class="flex items-center gap-3">
+<span class="bg-primary-container/20 text-indigo-300 px-3 py-1 rounded-full text-sm font-bold tracking-tight">12 🔥</span>
+</div>
+<h1 class="font-['Manrope'] text-lg font-bold tracking-tight text-indigo-300 dark:text-indigo-200">Oct 24, 2023</h1>
+<button class="hover:bg-zinc-800/50 transition-colors duration-300 ease-out active:scale-95 p-2 rounded-full">
+<span class="material-symbols-outlined text-indigo-300" data-icon="settings">settings</span>
+</button>
+</div>
+</nav>
+<main class="max-w-xl mx-auto px-6 space-y-12 pt-8">
+<!-- Hero Section: Memory Rhythm Summary -->
+<header class="space-y-6">
+<div class="flex flex-col gap-1">
+<span class="text-on-surface-variant label-md font-medium tracking-widest uppercase text-[10px]">Your Memory Rhythm</span>
+<h2 class="headline-lg text-3xl font-extrabold tracking-tight">Calm Command</h2>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="bg-surface-container-low p-6 rounded-lg flex flex-col justify-between h-32 relative overflow-hidden group">
+<div class="relative z-10">
+<span class="text-on-surface-variant text-xs font-semibold uppercase tracking-wider">Logged Today</span>
+<div class="text-4xl font-bold mt-2">08</div>
+</div>
+<div class="absolute -right-4 -bottom-4 opacity-5 group-hover:opacity-10 transition-opacity">
+<span class="material-symbols-outlined text-8xl" data-icon="edit_note">edit_note</span>
+</div>
+</div>
+<div class="bg-surface-container-low p-6 rounded-lg flex flex-col justify-between h-32 relative overflow-hidden group border border-primary/5">
+<div class="relative z-10">
+<span class="text-primary text-xs font-semibold uppercase tracking-wider">Due Today</span>
+<div class="text-4xl font-bold mt-2 text-primary">04</div>
+</div>
+<div class="absolute -right-4 -bottom-4 opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-8xl text-primary" data-icon="history_edu">history_edu</span>
+</div>
+</div>
+</div>
+</header>
+<!-- Review Today Module -->
+<section class="space-y-4">
+<div class="flex justify-between items-end px-1">
+<h3 class="text-xl font-bold tracking-tight">Review Sessions</h3>
+<span class="text-primary text-sm font-medium">View all</span>
+</div>
+<div class="bg-surface-container p-6 rounded-lg flex items-center gap-6 shadow-[0_20px_40px_rgba(0,0,0,0.2)]">
+<div class="relative flex items-center justify-center">
+<svg class="w-16 h-16 transform -rotate-90">
+<circle class="text-surface-container-highest" cx="32" cy="32" fill="transparent" r="28" stroke="currentColor" stroke-width="4"></circle>
+<circle class="text-primary" cx="32" cy="32" fill="transparent" r="28" stroke="currentColor" stroke-dasharray="175" stroke-dashoffset="44" stroke-width="4"></circle>
+</svg>
+<span class="absolute text-sm font-bold">75%</span>
+</div>
+<div class="flex-1">
+<h4 class="text-lg font-bold leading-tight">4 Items Waiting</h4>
+<p class="text-on-surface-variant text-sm mt-1">Ready for your daily spacing rhythm.</p>
+</div>
+<button class="lavender-gradient text-on-primary-fixed p-3 rounded-full shadow-lg active:scale-90 transition-transform">
+<span class="material-symbols-outlined" data-icon="play_arrow" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</button>
+</div>
+</section>
+<!-- Today's Log -->
+<section class="space-y-6">
+<div class="flex justify-between items-center px-1">
+<h3 class="text-xl font-bold tracking-tight">Today's Captures</h3>
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="sort">sort</span>
+</div>
+<div class="space-y-3">
+<!-- Log Card 1 -->
+<div class="bg-surface-container-low hover:bg-surface-container transition-colors p-5 rounded-lg flex items-center gap-4 cursor-pointer">
+<div class="w-12 h-12 rounded-full bg-surface-container-highest flex items-center justify-center">
+<span class="material-symbols-outlined text-primary" data-icon="psychology">psychology</span>
+</div>
+<div class="flex-1">
+<h5 class="font-bold text-base">Hegelian Dialectics</h5>
+<p class="text-on-surface-variant text-xs mt-0.5">Review in 4 days</p>
+</div>
+<span class="text-xs text-on-surface-variant font-medium">10:42 AM</span>
+</div>
+<!-- Log Card 2 -->
+<div class="bg-surface-container-low hover:bg-surface-container transition-colors p-5 rounded-lg flex items-center gap-4 cursor-pointer">
+<div class="w-12 h-12 rounded-full bg-surface-container-highest flex items-center justify-center">
+<span class="material-symbols-outlined text-primary" data-icon="architecture">architecture</span>
+</div>
+<div class="flex-1">
+<h5 class="font-bold text-base">Brutalist Composition</h5>
+<p class="text-on-surface-variant text-xs mt-0.5">Review in 12 hours</p>
+</div>
+<span class="text-xs text-on-surface-variant font-medium">09:15 AM</span>
+</div>
+<!-- Log Card 3 -->
+<div class="bg-surface-container-low hover:bg-surface-container transition-colors p-5 rounded-lg flex items-center gap-4 cursor-pointer">
+<div class="w-12 h-12 rounded-full bg-surface-container-highest flex items-center justify-center">
+<span class="material-symbols-outlined text-primary" data-icon="menu_book">menu_book</span>
+</div>
+<div class="flex-1">
+<h5 class="font-bold text-base">Notes on Metamodernism</h5>
+<p class="text-on-surface-variant text-xs mt-0.5">Review tomorrow</p>
+</div>
+<span class="text-xs text-on-surface-variant font-medium">08:02 AM</span>
+</div>
+</div>
+</section>
+<!-- Visual Anchor (Asymmetric Bento Element) -->
+</main>
+<!-- Bottom Capture Console / BottomNavBar Shell -->
+<div class="fixed bottom-0 left-0 w-full z-50 flex flex-col">
+<!-- Capture Console (Floating Action Context) -->
+<div class="max-w-xl mx-auto w-full px-6 mb-4">
+<div class="glass-panel rounded-full px-6 py-4 flex items-center gap-4 shadow-2xl border border-white/5">
+<span class="material-symbols-outlined text-primary" data-icon="auto_awesome">auto_awesome</span>
+<input class="bg-transparent border-none focus:ring-0 text-on-surface placeholder:text-zinc-500 w-full font-medium" placeholder="What did you learn today?" type="text"/>
+<button class="bg-primary/10 p-2 rounded-full text-primary hover:bg-primary/20 transition-colors">
+<span class="material-symbols-outlined" data-icon="arrow_upward">arrow_upward</span>
+</button>
+</div>
+</div>
+<!-- Bottom Navigation Bar -->
+<nav class="bg-[#2a2a2c]/70 backdrop-blur-2xl dark:bg-[#2a2a2c]/70 w-full rounded-t-[48px] px-4 pb-8 pt-4 flex justify-around items-center shadow-[0_-10px_40px_rgba(0,0,0,0.4)]">
+<!-- Active: Dashboard -->
+<a class="flex flex-col items-center justify-center bg-indigo-500/10 text-indigo-300 rounded-full p-3 haptic-feedback duration-400 ease-in-out active:scale-90" href="#">
+<span class="material-symbols-outlined" data-icon="grid_view" style="font-variation-settings: 'FILL' 1;">grid_view</span>
+<span class="font-['Manrope'] text-[10px] font-semibold uppercase tracking-widest mt-1">Dashboard</span>
+</a>
+<a class="flex flex-col items-center justify-center text-zinc-500 p-3 hover:text-indigo-200 transition-all active:scale-90" href="#">
+<span class="material-symbols-outlined" data-icon="add_circle">add_circle</span>
+<span class="font-['Manrope'] text-[10px] font-semibold uppercase tracking-widest mt-1">Capture</span>
+</a>
+<a class="flex flex-col items-center justify-center text-zinc-500 p-3 hover:text-indigo-200 transition-all active:scale-90" href="#">
+<span class="material-symbols-outlined" data-icon="history">history</span>
+<span class="font-['Manrope'] text-[10px] font-semibold uppercase tracking-widest mt-1">Log</span>
+</a>
+<a class="flex flex-col items-center justify-center text-zinc-500 p-3 hover:text-indigo-200 transition-all active:scale-90" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-['Manrope'] text-[10px] font-semibold uppercase tracking-widest mt-1">Settings</span>
+</a>
+</nav>
+</div>
+</body></html>
