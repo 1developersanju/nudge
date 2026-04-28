@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../background/review_notification_scheduler.dart';
 import '../domain/spaced_repetition.dart';
 import '../theme/review_spacing_controller.dart';
+import 'database_helper.dart';
 import 'models.dart';
 import 'prefs_keys.dart';
 import 'text_splitter.dart';
@@ -68,10 +69,20 @@ class LearningRepository extends ChangeNotifier {
 
   Future<void> load() async {
     final prefs = await SharedPreferences.getInstance();
-    final loaded = await TopicCodec.loadFromPrefs(prefs);
+
+    final legacyTopics = await TopicCodec.loadFromPrefs(prefs);
+    if (legacyTopics.isNotEmpty) {
+      for (final t in legacyTopics) {
+        await DatabaseHelper.instance.insertTopic(t);
+      }
+      await prefs.remove(PrefsKeys.topics);
+      await prefs.remove(PrefsKeys.legacyTopics);
+    }
+    
+    final dbTopics = await DatabaseHelper.instance.getAllTopics();
     _topics
       ..clear()
-      ..addAll(loaded);
+      ..addAll(dbTopics);
 
     final streakRaw = prefs.getString(_streakKey);
     if (streakRaw != null) {
@@ -133,8 +144,6 @@ class LearningRepository extends ChangeNotifier {
   }
 
   Future<void> _saveTopics() async {
-    final prefs = await SharedPreferences.getInstance();
-    await TopicCodec.saveToPrefs(prefs, _topics);
     await _syncReviewNotificationAlarms();
   }
 
@@ -150,19 +159,19 @@ class LearningRepository extends ChangeNotifier {
       final (title, notes) = LearningInputSplitter.titleAndNotes(chunk);
       if (title.isEmpty) continue;
       final capturedAt = DateTime.now().toUtc();
-      _topics.add(
-        LearningTopic(
-          id: _newId(),
-          title: title,
-          notes: notes,
-          createdAt: capturedAt,
-          reviews: SpacedRepetition.buildInitialSchedule(
-            capturedAt,
-            _newId,
-            _spacing.profile,
-          ),
+      final newTopic = LearningTopic(
+        id: _newId(),
+        title: title,
+        notes: notes,
+        createdAt: capturedAt,
+        reviews: SpacedRepetition.buildInitialSchedule(
+          capturedAt,
+          _newId,
+          _spacing.profile,
         ),
       );
+      _topics.add(newTopic);
+      await DatabaseHelper.instance.insertTopic(newTopic);
     }
     await recordActivity();
     await _saveTopics();
@@ -178,12 +187,14 @@ class LearningRepository extends ChangeNotifier {
     if (t == null) return;
     t.title = title;
     t.notes = notes;
+    await DatabaseHelper.instance.updateTopic(t);
     await _saveTopics();
     notifyListeners();
   }
 
   Future<void> deleteTopic(String id) async {
     _topics.removeWhere((t) => t.id == id);
+    await DatabaseHelper.instance.deleteTopic(id);
     await _saveTopics();
     notifyListeners();
   }
@@ -226,6 +237,7 @@ class LearningRepository extends ChangeNotifier {
     final ev = topic.nextPendingDue(DateTime.now());
     if (ev == null) return;
     ev.status = ReviewStatus.done;
+    await DatabaseHelper.instance.updateReview(ev);
     await _setReviewsDoneCount(_reviewsCompletedToday + 1);
     await recordActivity();
     await _saveTopics();
@@ -238,6 +250,7 @@ class LearningRepository extends ChangeNotifier {
     final ev = topic.nextPendingDue(DateTime.now());
     if (ev == null) return;
     ev.dueAt = ev.dueAt.add(_spacing.profile.snooze);
+    await DatabaseHelper.instance.updateReview(ev);
     await recordActivity();
     await _saveTopics();
     notifyListeners();
@@ -245,6 +258,7 @@ class LearningRepository extends ChangeNotifier {
 
   Future<void> clearAll() async {
     _topics.clear();
+    await DatabaseHelper.instance.clearAll();
     await _setReviewsDoneCount(0);
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(PrefsKeys.topics);

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '../data/models.dart';
 import '../data/repository.dart';
@@ -18,12 +19,20 @@ class ReviewSessionScreen extends StatefulWidget {
 }
 
 class _ReviewSessionScreenState extends State<ReviewSessionScreen> {
-  late List<LearningTopic> _remainingTopics;
+  late Timer _timer;
 
   @override
   void initState() {
     super.initState();
-    _remainingTopics = List.from(widget.topics);
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (mounted) setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
   }
 
   void _onProcess(LearningTopic t, bool recallSuccess) async {
@@ -33,10 +42,7 @@ class _ReviewSessionScreenState extends State<ReviewSessionScreen> {
       await widget.repo.snoozeNextReview(t.id);
     }
     if (mounted) {
-      setState(() {
-        _remainingTopics.remove(t);
-      });
-      if (_remainingTopics.isEmpty) {
+      if (widget.repo.dueTopics(DateTime.now()).isEmpty) {
         Navigator.of(context).pop();
       }
     }
@@ -44,31 +50,38 @@ class _ReviewSessionScreenState extends State<ReviewSessionScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (_remainingTopics.isEmpty) {
-      return Scaffold(
-        backgroundColor: AppTheme.surface(context),
-        appBar: AppBar(backgroundColor: Colors.transparent, elevation: 0),
-        body: Center(
-          child: Text(
-            "All Done",
-            style: TextStyle(color: AppTheme.ink(context)),
-          ),
-        ),
-      );
-    }
+    return ListenableBuilder(
+      listenable: widget.repo,
+      builder: (context, _) {
+        final pending = widget.repo.dueTopics(DateTime.now());
 
-    return Scaffold(
-      backgroundColor: AppTheme.surface(context),
-      appBar: AppBar(
-        title: Text('${widget.topics.length - _remainingTopics.length} / ${widget.topics.length} Completed'),
-        centerTitle: true,
-      ),
-      body: SafeArea(
-        child: ListView.builder(
-          padding: const EdgeInsets.all(24.0),
-          itemCount: _remainingTopics.length,
-          itemBuilder: (context, index) {
-            final current = _remainingTopics[index];
+        if (pending.isEmpty) {
+          return Scaffold(
+            backgroundColor: AppTheme.surface(context),
+            appBar: AppBar(backgroundColor: Colors.transparent, elevation: 0),
+            body: Center(
+              child: Text(
+                "All Done",
+                style: TextStyle(color: AppTheme.ink(context)),
+              ),
+            ),
+          );
+        }
+
+        final progress = widget.repo.reviewProgress(DateTime.now());
+
+        return Scaffold(
+          backgroundColor: AppTheme.surface(context),
+          appBar: AppBar(
+            title: Text('${progress.$1} / ${progress.$2} Completed'),
+            centerTitle: true,
+          ),
+          body: SafeArea(
+            child: ListView.builder(
+              padding: const EdgeInsets.all(24.0),
+              itemCount: pending.length,
+              itemBuilder: (context, index) {
+                final current = pending[index];
             final dueEvent = current.nextPendingDue(DateTime.now());
             String waveText = '';
             if (dueEvent != null) {
@@ -173,7 +186,11 @@ class _ReviewSessionScreenState extends State<ReviewSessionScreen> {
             );
           },
         ),
-      ),
+              },
+            ),
+          ),
+        );
+      },
     );
   }
 }

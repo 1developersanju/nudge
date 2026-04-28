@@ -120,6 +120,8 @@ class _CaptureOverlayState extends State<_CaptureOverlay> {
                     maxLines: null,
                     textInputAction: TextInputAction.done,
                     onSubmitted: (_) => _submit(),
+                    enableSuggestions: false,
+                    autocorrect: false,
                     style: const TextStyle(
                       fontSize: 32,
                       fontWeight: FontWeight.w800,
@@ -127,8 +129,7 @@ class _CaptureOverlayState extends State<_CaptureOverlay> {
                     ),
                     decoration: InputDecoration(
                       border: InputBorder.none,
-                      hintText:
-                          'What did you learn today? You can separate chapters with commas...',
+                      hintText: 'What did you learn today?',
                       hintStyle: TextStyle(
                         color: AppTheme.outlineVariant(context),
                       ),
