@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import 'app_theme.dart';
 
@@ -71,7 +72,7 @@ class _CaptureOverlayState extends State<_CaptureOverlay> {
       backgroundColor: Colors.transparent,
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+          padding: const EdgeInsets.only(left: 24, right: 24, top: 32, bottom: 8),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -212,7 +213,16 @@ class _CaptureOverlayState extends State<_CaptureOverlay> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 32),
+                  Text(
+                    'Crafted by Sanju ✨',
+                    style: GoogleFonts.caveat(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: AppTheme.muted(context).withValues(alpha: 0.5),
+                      letterSpacing: 1.5,
+                    ),
+                  ),
                 ],
               ),
             ],

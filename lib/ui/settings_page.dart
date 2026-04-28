@@ -27,36 +27,14 @@ class SettingsPage extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
           children: [
             // Header
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Settings',
-                  style: TextStyle(
-                    color: AppTheme.primaryContainer(context),
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20,
-                    letterSpacing: -0.5,
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: AppTheme.surfaceContainerLow(context),
-                    borderRadius: BorderRadius.circular(32),
-                  ),
-                  child: Text(
-                    '${repo.streak} 🔥',
-                    style: TextStyle(
-                      color: AppTheme.primaryContainer(context),
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ],
+            Text(
+              'Settings',
+              style: TextStyle(
+                color: AppTheme.primaryContainer(context),
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
+                letterSpacing: -0.5,
+              ),
             ),
             const SizedBox(height: 32),
 
@@ -71,7 +49,7 @@ class SettingsPage extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              'Refine your Sanctuary. Your preferences, like your data, remain local and private.',
+              'Personalize Nudge. Your preferences, like your data, remain local and private.',
               style: TextStyle(
                 fontSize: 16,
                 color: AppTheme.muted(context),

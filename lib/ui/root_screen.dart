@@ -6,6 +6,7 @@ import '../data/text_splitter.dart';
 import '../theme/review_spacing_controller.dart';
 import '../theme/theme_controller.dart';
 import 'app_theme.dart';
+import '../background/notification_channels.dart';
 import 'capture_overlay.dart';
 import 'history_page.dart';
 import 'home_screen.dart';
@@ -27,8 +28,31 @@ class RootScreen extends StatefulWidget {
   State<RootScreen> createState() => _RootScreenState();
 }
 
-class _RootScreenState extends State<RootScreen> {
+class _RootScreenState extends State<RootScreen> with WidgetsBindingObserver {
   int _currentIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await requestAndroidReviewNotificationPermissions();
+      if (mounted) await widget.repo.rescheduleNotificationAlarms();
+    });
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      widget.repo.rescheduleNotificationAlarms();
+    }
+  }
 
   void _onNavTapped(int index) {
     if (index == 1) {

@@ -31,11 +31,19 @@ android {
         versionName = flutter.versionName
     }
 
+    // Smaller APKs for sharing (e.g. WhatsApp): from repo root prefer one of:
+    //   flutter build apk --release --split-per-abi
+    //     → build/app/outputs/flutter-apk/app-*-release.apk (pick arm64 for most phones).
+    //   flutter build apk --release --target-platform=android-arm64
+    //     → one APK, smallest common choice (64-bit ARM only).
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
+            // TODO: Replace with your release keystore before Play Store upload.
+            // Debug signing is fine for local `flutter build apk --release` smoke tests.
             signingConfig = signingConfigs.getByName("debug")
+            // Keep off unless you add ProGuard keep rules for plugins (notifications, WorkManager).
+            isMinifyEnabled = false
+            isShrinkResources = false
         }
     }
 }

@@ -18,7 +18,13 @@ class ReviewSessionScreen extends StatefulWidget {
 }
 
 class _ReviewSessionScreenState extends State<ReviewSessionScreen> {
-  int _currentIndex = 0;
+  late List<LearningTopic> _remainingTopics;
+
+  @override
+  void initState() {
+    super.initState();
+    _remainingTopics = List.from(widget.topics);
+  }
 
   void _onProcess(LearningTopic t, bool recallSuccess) async {
     if (recallSuccess) {
@@ -26,16 +32,19 @@ class _ReviewSessionScreenState extends State<ReviewSessionScreen> {
     } else {
       await widget.repo.snoozeNextReview(t.id);
     }
-    if (_currentIndex < widget.topics.length - 1) {
-      if (mounted) setState(() => _currentIndex++);
-    } else {
-      if (mounted) Navigator.of(context).pop();
+    if (mounted) {
+      setState(() {
+        _remainingTopics.remove(t);
+      });
+      if (_remainingTopics.isEmpty) {
+        Navigator.of(context).pop();
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    if (widget.topics.isEmpty || _currentIndex >= widget.topics.length) {
+    if (_remainingTopics.isEmpty) {
       return Scaffold(
         backgroundColor: AppTheme.surface(context),
         appBar: AppBar(backgroundColor: Colors.transparent, elevation: 0),
@@ -48,81 +57,121 @@ class _ReviewSessionScreenState extends State<ReviewSessionScreen> {
       );
     }
 
-    final current = widget.topics[_currentIndex];
-
     return Scaffold(
       backgroundColor: AppTheme.surface(context),
       appBar: AppBar(
-        title: Text('${_currentIndex + 1} / ${widget.topics.length}'),
+        title: Text('${widget.topics.length - _remainingTopics.length} / ${widget.topics.length} Completed'),
         centerTitle: true,
       ),
       body: SafeArea(
-        child: Padding(
+        child: ListView.builder(
           padding: const EdgeInsets.all(24.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Expanded(
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: AppTheme.card(context),
-                    borderRadius: BorderRadius.circular(32),
-                  ),
-                  padding: const EdgeInsets.all(32),
-                  alignment: Alignment.center,
-                  child: Text(
-                    current.title,
-                    textAlign: TextAlign.center,
+          itemCount: _remainingTopics.length,
+          itemBuilder: (context, index) {
+            final current = _remainingTopics[index];
+            final dueEvent = current.nextPendingDue(DateTime.now());
+            String waveText = '';
+            if (dueEvent != null) {
+              switch (dueEvent.wave) {
+                case ReviewWave.day1:
+                  waveText = '1st Review';
+                  break;
+                case ReviewWave.day7:
+                  waveText = '2nd Review';
+                  break;
+                case ReviewWave.day30:
+                  waveText = '3rd Review';
+                  break;
+              }
+            }
+
+            return Container(
+              margin: const EdgeInsets.only(bottom: 16),
+              decoration: BoxDecoration(
+                color: AppTheme.surfaceContainerLow(context),
+                borderRadius: BorderRadius.circular(24),
+                border: Border.all(
+                  color: AppTheme.outlineVariant(context).withValues(alpha: 0.1),
+                ),
+              ),
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  if (waveText.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 8.0),
+                      child: Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: AppTheme.primaryContainer(context).withValues(alpha: 0.2),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              waveText,
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                color: AppTheme.primary(context),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  Text(
+                    current.captureDisplayText,
                     style: TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.w800,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      height: 1.25,
                       color: AppTheme.ink(context),
                     ),
                   ),
-                ),
-              ),
-              const SizedBox(height: 32),
-              Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton(
-                      style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 24),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(24),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton(
+                          style: OutlinedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                          ),
+                          onPressed: () => _onProcess(current, false),
+                          child: Text(
+                            'Review Again',
+                            style: TextStyle(color: AppTheme.muted(context)),
+                          ),
                         ),
                       ),
-                      onPressed: () => _onProcess(current, false),
-                      child: Text(
-                        'Review Again',
-                        style: TextStyle(color: AppTheme.muted(context)),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppTheme.primary(context),
-                        foregroundColor: AppTheme.onPrimary(context),
-                        padding: const EdgeInsets.symmetric(vertical: 24),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(24),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppTheme.primary(context),
+                            foregroundColor: AppTheme.onPrimary(context),
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                          ),
+                          onPressed: () => _onProcess(current, true),
+                          child: const Text(
+                            'Revised',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
                         ),
                       ),
-                      onPressed: () => _onProcess(current, true),
-                      child: const Text(
-                        'Revised',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    ),
+                    ],
                   ),
                 ],
               ),
-              const SizedBox(height: 48),
-            ],
-          ),
+            );
+          },
         ),
       ),
     );

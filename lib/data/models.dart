@@ -49,6 +49,14 @@ class LearningTopic {
   String title;
   String? notes;
 
+  /// Full capture for list/detail UI: [title] plus optional multi-line [notes]
+  /// (everything after the first line at log time).
+  String get captureDisplayText {
+    final n = notes?.trim();
+    if (n == null || n.isEmpty) return title;
+    return '$title\n$n';
+  }
+
   /// Capture instant (wall clock) stored as **UTC** in JSON; use [toLocal] for calendar UI.
   final DateTime createdAt;
   final List<ReviewEvent> reviews;

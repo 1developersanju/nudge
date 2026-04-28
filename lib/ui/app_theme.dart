@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
-  // Dark Obsidian Sanctuary Tokens
+  // Dark Obsidian Nudge Tokens
   static const Color _darkPrimary = Color(0xFFD2CEFF);
   static const Color _darkPrimaryContainer = Color(0xFFB4B0FB);
   static const Color _darkOnPrimary = Color(0xFF2B2769);

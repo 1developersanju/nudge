@@ -301,84 +301,80 @@ class _HistoryPageState extends State<HistoryPage> {
                             color: Colors.red,
                           ),
                         ),
-                        child: IntrinsicHeight(
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              SizedBox(
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(top: 12),
+                              child: SizedBox(
                                 width: 24,
-                                child: Stack(
+                                child: Align(
                                   alignment: Alignment.topCenter,
-                                  children: [
-                                    if (i != topics.length - 1)
-                                      Positioned.fill(
-                                        top: 12,
-                                        child: Container(
-                                          width: 1,
-                                          color: AppTheme.outlineVariant(
+                                  child: Container(
+                                    width: 10,
+                                    height: 10,
+                                    decoration: BoxDecoration(
+                                      color: AppTheme.primary(context),
+                                      shape: BoxShape.circle,
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: AppTheme.primaryContainer(
                                             context,
-                                          ).withValues(alpha: 0.3),
+                                          ).withValues(alpha: 0.4),
+                                          blurRadius: 8,
                                         ),
-                                      ),
-                                    Positioned(
-                                      top: 12,
-                                      child: Container(
-                                        width: 10,
-                                        height: 10,
-                                        decoration: BoxDecoration(
-                                          color: AppTheme.primary(context),
-                                          shape: BoxShape.circle,
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color: AppTheme.primaryContainer(
-                                                context,
-                                              ).withValues(alpha: 0.4),
-                                              blurRadius: 8,
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: Container(
-                                  margin: const EdgeInsets.only(bottom: 24),
-                                  padding: const EdgeInsets.all(20),
-                                  decoration: BoxDecoration(
-                                    color: AppTheme.surfaceContainerLow(
-                                      context,
-                                    ),
-                                    borderRadius: BorderRadius.circular(16),
-                                    border: Border.all(
-                                      color: AppTheme.outlineVariant(
-                                        context,
-                                      ).withValues(alpha: 0.1),
+                                      ],
                                     ),
                                   ),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        t.title,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Container(
+                                margin: const EdgeInsets.only(bottom: 24),
+                                padding: const EdgeInsets.all(20),
+                                decoration: BoxDecoration(
+                                  color: AppTheme.surfaceContainerLow(context),
+                                  borderRadius: BorderRadius.circular(16),
+                                  border: Border.all(
+                                    color: AppTheme.outlineVariant(
+                                      context,
+                                    ).withValues(alpha: 0.1),
+                                  ),
+                                ),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.stretch,
+                                  children: [
+                                    DefaultTextStyle(
+                                      style: DefaultTextStyle.of(context).style,
+                                      maxLines: null,
+                                      softWrap: true,
+                                      overflow: TextOverflow.clip,
+                                      child: Text(
+                                        t.captureDisplayText,
+                                        textWidthBasis: TextWidthBasis.parent,
+                                        softWrap: true,
                                         style: const TextStyle(
                                           fontWeight: FontWeight.bold,
                                           fontSize: 16,
+                                          height: 1.35,
                                         ),
                                       ),
-                                      const SizedBox(height: 12),
-                                      Row(
-                                        children: [
-                                          Icon(
-                                            Icons.schedule,
-                                            size: 14,
-                                            color: AppTheme.muted(context),
-                                          ),
-                                          const SizedBox(width: 4),
-                                          Text(
+                                    ),
+                                    const SizedBox(height: 12),
+                                    Row(
+                                      children: [
+                                        Icon(
+                                          Icons.schedule,
+                                          size: 14,
+                                          color: AppTheme.muted(context),
+                                        ),
+                                        const SizedBox(width: 4),
+                                        Expanded(
+                                          child: Text(
                                             timeFmt.format(
                                               t.createdAt.toLocal(),
                                             ),
@@ -387,30 +383,44 @@ class _HistoryPageState extends State<HistoryPage> {
                                               color: AppTheme.muted(context),
                                             ),
                                           ),
-                                          if (t.nextPending() != null) ...[
-                                            const SizedBox(width: 16),
-                                            Icon(
+                                        ),
+                                      ],
+                                    ),
+                                    if (t.nextPending() != null) ...[
+                                      const SizedBox(height: 8),
+                                      Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                              top: 1,
+                                            ),
+                                            child: Icon(
                                               Icons.event_repeat,
                                               size: 14,
                                               color: AppTheme.muted(context),
                                             ),
-                                            const SizedBox(width: 4),
-                                            Text(
+                                          ),
+                                          const SizedBox(width: 4),
+                                          Expanded(
+                                            child: Text(
                                               'Next: ${_formatNextReview(t.nextPending()!.dueAt)}',
                                               style: TextStyle(
                                                 fontSize: 11,
+                                                height: 1.35,
                                                 color: AppTheme.muted(context),
                                               ),
                                             ),
-                                          ],
+                                          ),
                                         ],
                                       ),
                                     ],
-                                  ),
+                                  ],
                                 ),
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                       );
                     },

@@ -7,26 +7,7 @@ class LearningInputSplitter {
   static List<String> splitLearningInput(String raw) {
     final t = raw.trim();
     if (t.isEmpty) return [];
-
-    final lines = t
-        .split(RegExp(r'\r?\n'))
-        .map((s) => s.trim())
-        .where((s) => s.isNotEmpty)
-        .toList();
-
-    if (lines.length > 1) {
-      return lines.take(maxTopics).toList();
-    }
-
-    final single = lines.isEmpty ? t : lines.first;
-    final parts = single.split(
-      RegExp(r'[,;]|(?:\s+and\s+)|(?:\s*&\s*)', caseSensitive: false),
-    );
-    return parts
-        .map((s) => s.trim())
-        .where((s) => s.isNotEmpty)
-        .take(maxTopics)
-        .toList();
+    return [t];
   }
 
   /// First line as title; remainder as optional notes.

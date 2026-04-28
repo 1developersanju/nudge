@@ -1,6 +1,7 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-
+import '../data/models.dart';
 import '../data/repository.dart';
 import '../theme/review_spacing_controller.dart';
 import '../theme/theme_controller.dart';
@@ -25,6 +26,15 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final _scrollCtrl = ScrollController();
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (mounted) setState(() {});
+    });
+  }
 
   String _formatNextReview(DateTime dueAt, {bool includeTime = false}) {
     final now = DateTime.now();
@@ -44,6 +54,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void dispose() {
+    _timer?.cancel();
     _scrollCtrl.dispose();
     super.dispose();
   }
@@ -66,14 +77,39 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      'Sanctuary',
-                      style: TextStyle(
-                        color: AppTheme.primaryContainer(context),
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20,
-                        letterSpacing: -0.5,
-                      ),
+                    Row(
+                      children: [
+                        Text(
+                          'Nudge',
+                          style: TextStyle(
+                            color: AppTheme.primaryContainer(context),
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20,
+                            letterSpacing: -0.5,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        ListenableBuilder(
+                          listenable: widget.repo,
+                          builder: (context, _) => Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppTheme.surfaceContainerLow(context),
+                              borderRadius: BorderRadius.circular(32),
+                            ),
+                            child: Text(
+                              '${widget.repo.streak} 🔥',
+                              style: TextStyle(
+                                color: AppTheme.primaryContainer(context),
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                     Text(
                       DateFormat('MMM d, yyyy').format(DateTime.now()),
@@ -96,7 +132,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
-                      'Calm Command',
+                      'Study Hub',
                       style: TextStyle(
                         fontSize: 32,
                         fontWeight: FontWeight.w800,
@@ -105,7 +141,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Your Memory Rhythm',
+                      'Your Daily Progress',
                       style: TextStyle(
                         fontSize: 16,
                         color: AppTheme.primaryContainer(context),
@@ -203,95 +239,168 @@ class _HomeScreenState extends State<HomeScreen> {
                       );
                     }
 
-                    return InkWell(
-                      onTap: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => ReviewSessionScreen(
-                              repo: widget.repo,
-                              topics: pending,
+                    final displayList = pending.take(3).toList();
+
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text(
+                              'To Review Today',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: -0.2,
+                              ),
                             ),
-                          ),
-                        );
-                      },
-                      borderRadius: BorderRadius.circular(24),
-                      child: Container(
-                        padding: const EdgeInsets.all(24),
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              AppTheme.primary(context),
-                              AppTheme.primaryContainer(context),
-                            ],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                          borderRadius: BorderRadius.circular(24),
-                          boxShadow: [
-                            BoxShadow(
-                              color: AppTheme.primary(
-                                context,
-                              ).withValues(alpha: 0.2),
-                              blurRadius: 32,
-                              offset: const Offset(0, 16),
-                            ),
+                            if (pending.length > 3)
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (_) => ReviewSessionScreen(
+                                        repo: widget.repo,
+                                        topics: pending,
+                                      ),
+                                    ),
+                                  );
+                                },
+                                style: TextButton.styleFrom(
+                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                                  minimumSize: Size.zero,
+                                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                ),
+                                child: Text(
+                                  'View All (${pending.length})',
+                                  style: TextStyle(
+                                    color: AppTheme.primary(context),
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ),
                           ],
                         ),
-                        child: Row(
-                          children: [
-                            Stack(
-                              alignment: Alignment.center,
-                              children: [
-                                SizedBox(
-                                  width: 64,
-                                  height: 64,
-                                  child: CircularProgressIndicator(
-                                    value: 1.0,
-                                    strokeWidth: 4,
-                                    backgroundColor: AppTheme.onPrimary(
-                                      context,
-                                    ).withValues(alpha: 0.2),
-                                    color: AppTheme.onPrimary(context),
-                                  ),
+                        const SizedBox(height: 16),
+                        ListView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: displayList.length,
+                          itemBuilder: (context, index) {
+                            final current = displayList[index];
+                            final dueEvent = current.nextPendingDue(DateTime.now());
+                            String waveText = '';
+                            if (dueEvent != null) {
+                              switch (dueEvent.wave) {
+                                case ReviewWave.day1:
+                                  waveText = '1st Review';
+                                  break;
+                                case ReviewWave.day7:
+                                  waveText = '2nd Review';
+                                  break;
+                                case ReviewWave.day30:
+                                  waveText = '3rd Review';
+                                  break;
+                              }
+                            }
+                            
+                            return Container(
+                              margin: const EdgeInsets.only(bottom: 16),
+                              decoration: BoxDecoration(
+                                color: AppTheme.surfaceContainerLow(context),
+                                borderRadius: BorderRadius.circular(24),
+                                border: Border.all(
+                                  color: AppTheme.outlineVariant(context).withValues(alpha: 0.1),
                                 ),
-                                Icon(
-                                  Icons.play_arrow_rounded,
-                                  color: AppTheme.onPrimary(context),
-                                  size: 32,
-                                ),
-                              ],
-                            ),
-                            const SizedBox(width: 24),
-                            Expanded(
+                              ),
+                              padding: const EdgeInsets.all(20),
                               child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
                                 children: [
+                                  if (waveText.isNotEmpty)
+                                    Padding(
+                                      padding: const EdgeInsets.only(bottom: 8.0),
+                                      child: Row(
+                                        children: [
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                            decoration: BoxDecoration(
+                                              color: AppTheme.primaryContainer(context).withValues(alpha: 0.2),
+                                              borderRadius: BorderRadius.circular(8),
+                                            ),
+                                            child: Text(
+                                              waveText,
+                                              style: TextStyle(
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.bold,
+                                                color: AppTheme.primary(context),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
                                   Text(
-                                    'Review Sessions',
+                                    current.captureDisplayText,
                                     style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                      color: AppTheme.onPrimary(context),
-                                      letterSpacing: -0.5,
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w600,
+                                      height: 1.25,
+                                      color: AppTheme.ink(context),
                                     ),
                                   ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    '${pending.length} Topics pending',
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      color: AppTheme.onPrimary(
-                                        context,
-                                      ).withValues(alpha: 0.8),
-                                      fontWeight: FontWeight.w600,
-                                    ),
+                                  const SizedBox(height: 16),
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: OutlinedButton(
+                                          style: OutlinedButton.styleFrom(
+                                            padding: const EdgeInsets.symmetric(vertical: 12),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.circular(16),
+                                            ),
+                                          ),
+                                          onPressed: () async {
+                                            await widget.repo.snoozeNextReview(current.id);
+                                            setState(() {});
+                                          },
+                                          child: Text(
+                                            'Review Again',
+                                            style: TextStyle(color: AppTheme.muted(context)),
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 12),
+                                      Expanded(
+                                        child: ElevatedButton(
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: AppTheme.primary(context),
+                                            foregroundColor: AppTheme.onPrimary(context),
+                                            padding: const EdgeInsets.symmetric(vertical: 12),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.circular(16),
+                                            ),
+                                          ),
+                                          onPressed: () async {
+                                            await widget.repo.completeNextReview(current.id);
+                                            setState(() {});
+                                          },
+                                          child: const Text(
+                                            'Revised',
+                                            style: TextStyle(fontWeight: FontWeight.bold),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ],
                               ),
-                            ),
-                          ],
+                            );
+                          },
                         ),
-                      ),
+                      ],
                     );
                   },
                 ),
@@ -368,7 +477,8 @@ class _HomeScreenState extends State<HomeScreen> {
                               borderRadius: BorderRadius.circular(16),
                             ),
                             child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
                                 Row(
                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -389,11 +499,22 @@ class _HomeScreenState extends State<HomeScreen> {
                                     ),
                                     const SizedBox(width: 16),
                                     Expanded(
-                                      child: Text(
-                                        t.title,
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 16,
+                                      child: DefaultTextStyle(
+                                        style: DefaultTextStyle.of(
+                                          context,
+                                        ).style,
+                                        maxLines: null,
+                                        softWrap: true,
+                                        overflow: TextOverflow.clip,
+                                        child: Text(
+                                          t.captureDisplayText,
+                                          textWidthBasis: TextWidthBasis.parent,
+                                          softWrap: true,
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16,
+                                            height: 1.35,
+                                          ),
                                         ),
                                       ),
                                     ),
